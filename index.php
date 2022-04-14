@@ -1,157 +1,126 @@
 <?php
+require_once('classes/productsModel.php');
+require_once('classes/book.php');
+require_once('classes/dvd.php');
+require_once('classes/furniture.php');
+$model = new ProductsModel();
+$title = "Overview";
 
-class Product
- {
-        private $sku;
-        private $name;
-        private $price;
-        protected function getSku()
-        {
-            return $this->sku;
-        }
-        protected function setSku($sku)
-        {
-            $this->sku = $sku;
-        }
-        protected function getName()
-        {
-            return $this->name;
-        }
-        protected function setName($name)
-        {
-            $this->name = $name;
-        }
-        protected function getPrice()
-        {
-            return $this->price;
-        }
-        protected function setPrice($price)
-        {
-            $this->price = $price;
-        }
-        public function __construct($array)
-        {
-            $this->setSku($array['sku']);
-            $this->setName($array['name']);
-            $this->setPrice($array['price']);
-        }
-    }
-   
-    class DVD extends Product
-    {
-        public $size;
-       
-        
-        public function getSize()
-        {
-            return $this->size;
-        }
-        public function setSize($size)
-        {
-            $this->size = $size;
-        }
-       
-        public function __construct($array)
-        {
-            parent :: __construct($array);
-           
-            $this->setSize($array['size']);
-        }
+if (isset($_POST['add'])) {
+    $title = "Product addition";
+    echo var_dump($_POST);
+    echo "<br>";
 
-       $array = [
-       'sku' => 'ALP',
-       'name' => 'hjkl',
-       'price' => 80,
-       'size' => 1,
-       ];
+    switch ($_POST['type']) {
+        case 'Book':
+            $product = new Book($_POST);
+            break;
 
-       $b = new DVD($array);
-       echo $b->getSize();
+        case 'DVD':
+            $product = new DVD($_POST);
+            break;
+
+        case 'Furniture':
+            $product = new Furniture($_POST);
+            break;
     }
 
-    class Book extends Product
-    {
-        public $weight;
-       
-        public function getWeight()
-        {
-            return $this->weight;
-        }
-        public function setWeight($weight)
-        {
-            $this->weight = $weight;
-        }
-        public function __construct($array)
-        {
-        	parent :: __construct($array);
-          
-            $this->setWeight($array['weight']);
-        }
-        $array = [
-       'sku' => 'AdfghP',
-       'name' => 'master and margarita',
-       'price' => 20,
-       'weight' => 3,
-       ];
+    $model->addProduct($product);
+}
 
-       $c = new Book($array);
-             echo $c->getWeight();
-    }
+if (isset($_POST['delete'])) {
+    $title = "Product deleting";
+    echo var_dump($_POST);
+    echo "<br>";
 
+    $model->deleteProduct($_POST['sku']);
+}
 
-    class Furniture extends Product
-    {
-       public $length;
-       public $width;
-       public $height;
-
-        
-        public function getHeight()
-        {
-            return $this->height;
-        }
-        public function setHeight($height)
-        {
-            $this->height = $height;
-        }
-        public function getWidth()
-        {
-            return $this->width;
-        }
-        public function setWidth($width)
-        {
-            $this->width = $width;
-        }
-        public function getLength()
-        {
-            return $this->length;
-        }
-        public function setLength($length)
-        {
-            $this->length = $length;
-        }
-        public function __construct($array)
-        {
-        	parent :: __construct($array);
-           
-            $this->setHeight($array['height']);
-            $this->setWidth($array['width']);
-            $this->setLength($array['length']);
-        }
-      $array = [
-       'sku' => 'Adfggjknm,hP',
-       'name' => 'phurniture123',
-       'price' => 156,
-       'height' => 3,
-       'width'=> 150,
-       'length' => 56,
-       ];
-
-       $j = new Furniture($array);
-      
-       echo $j->getLength();
-        
-    }
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $title; ?></title>
+</head>
+
+<body>
+
+    <!-- <a href="classes/tracer.php">Tracer example</a> -->
+
+    <!-- Form for new value-->
+    <h2>Add Book</h2>
+    <form method="post">
+        <input type="text" name="add" hidden>
+        <input type="text" name="type" value="Book" hidden>
+        <input type="text" name="sku" placeholder="Артикул">
+        <input type="text" name="name" placeholder="Название">
+        <input type="text" name="price" placeholder="Цена">
+        <input type="text" name="weight" placeholder="Вес">
+        <input type="submit" value="Добавить">
+    </form>
+
+    <!-- Form for new DVD-->
+    <h2>Add DVD</h2>
+    <form method="post">
+        <input type="text" name="add" hidden>
+        <input type="text" name="type" value="DVD" hidden>
+        <input type="text" name="sku" placeholder="Артикул">
+        <input type="text" name="name" placeholder="Название">
+        <input type="text" name="price" placeholder="Цена">
+        <input type="text" name="size" placeholder="Размер">
+        <input type="submit" value="Добавить">
+    </form>
+
+    <!-- Form for new furniture-->
+    <h2>Add furniture</h2>
+    <form method="post">
+        <input type="text" name="add" hidden>
+        <input type="text" name="type" value="Furniture" hidden>
+        <input type="text" name="sku" placeholder="Артикул">
+        <input type="text" name="name" placeholder="Название">
+        <input type="text" name="price" placeholder="Цена">
+        <input type="text" name="length" placeholder="Длина">
+        <input type="text" name="width" placeholder="Ширина">
+        <input type="text" name="height" placeholder="Высота">
+        <input type="submit" value="Добавить">
+    </form>
+
+    <!-- Delete product by SKU form-->
+    <h2>Delete product by SKU</h2>
+    <form method="post">
+        <input type="text" name="delete" hidden>
+        <input type="text" name="sku" placeholder="Артикул">
+        <input type="submit" value="Удалить">
+    </form>
+
+    <!-- Table with products -->
+    <h2>All products</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Артикул</th>
+                <th>Название</th>
+                <th>Цена</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $products = $model->getProducts();
+            foreach ($products as $product) {
+                echo '<tr>';
+                echo '<td>' . $product->getSKU() . '</td>';
+                echo '<td>' . $product->getName() . '</td>';
+                echo '<td>' . $product->getPrice() . '</td>';
+                echo '</tr>';
+            }
+            ?>
+        </tbody>
+    </table>
+</body>
+
+</html>
